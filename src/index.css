@@ -3,3 +3,11 @@
 @tailwind components;
 
 @tailwind utilities;
+
+.heading {
+  font-weight: 700;
+}
+
+* {
+  transition: 0.3s;
+}
