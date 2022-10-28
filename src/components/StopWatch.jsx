@@ -13,72 +13,79 @@ function StopWatch() {
   });
 
   const addDays = () => {
-    setTimer((prev) => ({ ...prev, days: prev.days + 1 }));
+    // setTimer((prev) => ({ ...prev, days: prev.days + 1 }));
+    setTimer((prev) => {
+      return { ...prev, days: prev.days + 1 };
+    });
   };
 
   const addHours = () => {
-    if (timer.hours <= 23) {
-      setTimer((prev) => ({ ...prev, hours: prev.hours + 1 }));
-    } else {
-      setTimer((prev) => ({ ...prev, hours: 0 }));
-      addDays();
-    }
+    // if (timer.hours <= 23) {
+    //   setTimer((prev) => ({ ...prev, hours: prev.hours + 1 }));
+    // } else {
+    //   setTimer((prev) => ({ ...prev, hours: 0 }));
+    //   addDays();
+    // }
+    setTimer((prev) => {
+      if (prev.hours <= 23) {
+        return { ...prev, hours: prev.hours + 1 };
+      } else {
+        // addSeconds();
+        addDays();
+        return { ...prev, hours: 0 };
+      }
+    });
   };
   const addMinutes = () => {
-    if (timer.minutes <= 59) {
-      setTimer((prev) => ({ ...prev, minutes: prev.minutes + 1 }));
-    } else {
-      setTimer((prev) => ({ ...prev, minutes: 0 }));
-      addHours();
-    }
+    // if (timer.minutes <= 59) {
+    //   setTimer((prev) => ({ ...prev, minutes: prev.minutes + 1 }));
+    // } else {
+    //   setTimer((prev) => ({ ...prev, minutes: 0 }));
+    //   addHours();
+    // }
+    setTimer((prev) => {
+      if (prev.minutes <= 59) {
+        return { ...prev, minutes: prev.minutes + 1 };
+      } else {
+        // addSeconds();
+        addHours();
+        return { ...prev, minutes: 0 };
+      }
+    });
   };
   const addSeconds = () => {
-    if (timer.seconds <= 59) {
-      setTimer((prev) => ({ ...prev, seconds: prev.seconds + 1 }));
-    } else {
-      setTimer((prev) => ({ ...prev, seconds: 0 }));
-      addMinutes();
-    }
+    // if (timer.seconds <= 59) {
+    //   setTimer((prev) => ({ ...prev, seconds: prev.seconds + 1 }));
+    // } else {
+    //   setTimer((prev) => ({ ...prev, seconds: 0 }));
+    //   addMinutes();
+    // }
+    setTimer((prev) => {
+      if (prev.seconds <= 59) {
+        return { ...prev, seconds: prev.seconds + 1 };
+      } else {
+        // addSeconds();
+        addMinutes();
+        return { ...prev, seconds: 0 };
+      }
+    });
   };
   const addMS = () => {
-    if (timer.ms <= 59) {
-      setTimer((prev) => ({ ...prev, ms: prev.ms + 1 }));
-    } else {
-      if (timer.seconds <= 59) {
-        setTimer((prev) => ({ ...prev, ms: 0, seconds: prev.seconds + 1 }));
+    setTimer((prev) => {
+      if (prev.ms <= 59) {
+        return { ...prev, ms: prev.ms + 1 };
       } else {
-        // if (timer.minutes <= 59) {
-        //   setTimer((prev) => ({
-        //     ...prev,
-        //     ms: 0,
-        //     seconds: 0,
-        //     minutes: prev.minutes + 1,
-        //   }));
-        // } else {
-        //   if (timer.hours <= 23) {
-        //     setTimer((prev) => ({
-        //       ...prev,
-        //       ms: 0,
-        //       seconds: 0,
-        //       minutes: 0,
-        //       hours: prev.hours + 1,
-        //     }));
-        //   } else {
-        //     setTimer((prev) => ({
-        //       ...prev,
-        //       ms: 0,
-        //       seconds: 0,
-        //       minutes: 0,
-        //       hours: 0,
-        //       days: prev.days + 1,
-        //     }));
-        //   }
-        // }
-        setTimer((prev) => ({ ...prev, ms: 0 }));
+        // addSeconds();
         addSeconds();
+        return { ...prev, ms: 0 };
       }
-      // addSeconds();
-    }
+    });
+    // if (timer.ms <= 59) {
+    //   setTimer((prev) => ({ ...prev, ms: prev.ms + 1 }));
+    // } else {
+    //   setTimer((prev) => ({ ...prev, ms: 0 }));
+    //   addSeconds();
+    // }
   };
   useEffect(() => {
     console.log("Rendered UseEffect");
@@ -102,7 +109,7 @@ function StopWatch() {
     interval = setInterval(() => {
       console.log("interval running");
       addMS();
-    }, 1);
+    }, 16.66);
   };
   return (
     <div className="max-w-xl flex flex-col gap-4 border-indigo-600 rounded-md p-4 m-4 border-2 justify-center items-center mx-auto">
