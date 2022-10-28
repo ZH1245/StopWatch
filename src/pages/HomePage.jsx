@@ -6,8 +6,10 @@ function HomePage() {
   return (
     <div>
       <Header />
-      <CurrentTime />
-      <StopWatch />
+      <div className="flex md:flex-row items-center content-center sm:flex-col gap-2">
+        <CurrentTime />
+        <StopWatch />
+      </div>
     </div>
   );
 }

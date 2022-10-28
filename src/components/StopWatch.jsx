@@ -1,72 +1,157 @@
 import React from "react";
-import moment from "moment/moment";
 import { useState } from "react";
 import { useEffect } from "react";
 let interval;
 function StopWatch() {
-  const [started, setStarted] = useState(false);
-  const [timer, setTimer] = useState();
+  const [status, setStatus] = useState("reset");
+  const [timer, setTimer] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    ms: 0,
+  });
+
+  const addDays = () => {
+    setTimer((prev) => ({ ...prev, days: prev.days + 1 }));
+  };
+
+  const addHours = () => {
+    if (timer.hours <= 23) {
+      setTimer((prev) => ({ ...prev, hours: prev.hours + 1 }));
+    } else {
+      setTimer((prev) => ({ ...prev, hours: 0 }));
+      addDays();
+    }
+  };
+  const addMinutes = () => {
+    if (timer.minutes <= 59) {
+      setTimer((prev) => ({ ...prev, minutes: prev.minutes + 1 }));
+    } else {
+      setTimer((prev) => ({ ...prev, minutes: 0 }));
+      addHours();
+    }
+  };
+  const addSeconds = () => {
+    if (timer.seconds <= 59) {
+      setTimer((prev) => ({ ...prev, seconds: prev.seconds + 1 }));
+    } else {
+      setTimer((prev) => ({ ...prev, seconds: 0 }));
+      addMinutes();
+    }
+  };
+  const addMS = () => {
+    if (timer.ms <= 59) {
+      setTimer((prev) => ({ ...prev, ms: prev.ms + 1 }));
+    } else {
+      if (timer.seconds <= 59) {
+        setTimer((prev) => ({ ...prev, ms: 0, seconds: prev.seconds + 1 }));
+      } else {
+        // if (timer.minutes <= 59) {
+        //   setTimer((prev) => ({
+        //     ...prev,
+        //     ms: 0,
+        //     seconds: 0,
+        //     minutes: prev.minutes + 1,
+        //   }));
+        // } else {
+        //   if (timer.hours <= 23) {
+        //     setTimer((prev) => ({
+        //       ...prev,
+        //       ms: 0,
+        //       seconds: 0,
+        //       minutes: 0,
+        //       hours: prev.hours + 1,
+        //     }));
+        //   } else {
+        //     setTimer((prev) => ({
+        //       ...prev,
+        //       ms: 0,
+        //       seconds: 0,
+        //       minutes: 0,
+        //       hours: 0,
+        //       days: prev.days + 1,
+        //     }));
+        //   }
+        // }
+        setTimer((prev) => ({ ...prev, ms: 0 }));
+        addSeconds();
+      }
+      // addSeconds();
+    }
+  };
   useEffect(() => {
-    console.log("RENDEREd 22");
-    setTimer(
-      moment().set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-    );
+    console.log("Rendered UseEffect");
+    // setTimer({ days: 0, hours: 0, minutes: 0, seconds: 0, ms: 0 });
     return () => {
-      // clearInterval(interval);
+      clearInterval(interval);
     };
   }, []);
   console.log("RENDERED");
-  const resetTimer = () => {
-    setStarted(false);
+  const pauseTimer = () => {
+    setStatus("paused");
     clearInterval(interval);
-    setTimer(
-      moment().set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 10 })
-    );
+  };
+  const resetTimer = () => {
+    setStatus("reset");
+    clearInterval(interval);
+    setTimer({ days: 0, hours: 0, minutes: 0, seconds: 0, ms: 0 });
   };
   const startTimer = () => {
-    setStarted(true);
+    setStatus("started");
     interval = setInterval(() => {
-      console.log(moment(timer).milliseconds());
       console.log("interval running");
-      console.log(moment(timer).add(10, "milliseconds"));
-      setTimer(moment(timer).add(10, "days"));
-      console.log(moment(timer).millisecond());
-    }, 10);
+      addMS();
+    }, 1);
   };
   return (
-    <div className="max-w-2xl flex flex-col gap-4 border-indigo-600 rounded-md p-4 border-2 justify-center items-center mx-auto">
+    <div className="max-w-xl flex flex-col gap-4 border-indigo-600 rounded-md p-4 m-4 border-2 justify-center items-center mx-auto">
       <div className="heading text-2xl text-center text-indigo-600 border-b-4 border-b-indigo-600">
         Stopwatch
       </div>
       <div className="content flex flex-row my-3 gap-2 content-center items-center font-bold">
-        <div className="text-blue-600 text-2xl">
-          {moment(timer).hours() + " H"}
-        </div>
+        <div className="text-blue-600 text-2xl">{timer.days + " D"}</div>
         <div className="text-2xl">:</div>
-        <div className="text-blue-600 text-2xl">
-          {moment(timer).minutes() + " M"}
-        </div>
+        <div className="text-blue-600 text-2xl">{timer.hours + " H"}</div>
         <div className="text-2xl">:</div>
-        <div className="text-blue-600 text-2xl">
-          {moment(timer).seconds() + " S"}
-        </div>
+        <div className="text-blue-600 text-2xl">{timer.minutes + " M"}</div>
         <div className="text-2xl">:</div>
-        <div className="text-blue-600 text-2xl">
-          {moment(timer).milliseconds() + " MS"}
-        </div>
+        <div className="text-blue-600 text-2xl">{timer.seconds + " S"}</div>
+        <div className="text-2xl">:</div>
+        <div className="text-blue-600 text-2xl">{timer.ms + " MS"}</div>
       </div>
       <div className="flex flex-row justify-end gap-4 content-center items-end">
         <button
-          className="bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+          className={
+            status === "started" || status === "paused"
+              ? "bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+              : "opacity-50 cursor-not-allowed bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+          }
           onClick={resetTimer}
-          disabled={started ? false : true}
+          disabled={status === "started" || status === "paused" ? false : true}
         >
           Reset
         </button>
+
         <button
-          className="bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+          className={
+            status === "started"
+              ? "bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+              : "opacity-50 cursor-not-allowed bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+          }
+          onClick={pauseTimer}
+          disabled={status === "started" ? false : true}
+        >
+          Pause
+        </button>
+        <button
+          className={
+            status !== "started"
+              ? "bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+              : "opacity-50 cursor-not-allowed bg-indigo-600 text-white font-bold px-5 py-3 rounded-full"
+          }
           onClick={startTimer}
-          disabled={started ? true : false}
+          disabled={status === "reset" || status === "paused" ? false : true}
         >
           Start
         </button>
@@ -74,5 +159,4 @@ function StopWatch() {
     </div>
   );
 }
-
 export default StopWatch;
